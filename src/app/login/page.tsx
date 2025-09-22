@@ -1,22 +1,36 @@
 "use client";
+import React, { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/buttons/button";
 import InputComponent from "@/components/InputComponent/InputComponent";
 import { useRiveLoginAnimation } from "@/hooks/useRiveLoginAnimation";
-import {
-  LockKeyholeBold,
-  UserBold,
-  EyeBold,
-  EyeClosedBold,
-} from "solar-icon-set";
-import { useRef, useState } from "react";
-
+import { LockKeyholeBold, UserBold, EyeBold, EyeClosedBold } from "solar-icon-set";
 export default function LoginPage() {
+  const router = useRouter();
   const userRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
   const [showing, setShowing] = useState(false);
 
   const userHasText = () => (userRef.current?.value?.length ?? 0) > 0;
   const passHasText = () => (passRef.current?.value?.length ?? 0) > 0;
+
+  const handleLogin = async () => {
+    const username = userRef.current?.value;
+    const password = passRef.current?.value;
+
+    const response = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      router.push("/not-found");
+    } else {
+      alert("Error en el Login" + " " + data.message);
+    }
+  };
 
   const { RiveComponent, syncRiveFromState } = useRiveLoginAnimation(
     userHasText,
@@ -63,7 +77,7 @@ export default function LoginPage() {
                   syncRiveFromState();
                   return;
                 }
-                setShowing((prev) => !prev);
+                setShowing((prev: boolean) => !prev);
               }}
               aria-label={showing ? "Ocultar contraseña" : "Mostrar contraseña"}
               aria-pressed={showing}
@@ -78,7 +92,7 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <Button>Iniciar Sesión</Button>
+          <Button onClick={handleLogin}>Iniciar Sesión</Button>
         </div>
       </div>
     </div>
