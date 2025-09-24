@@ -3,9 +3,10 @@ import React from 'react';
 // Definimos la interfaz para las propiedades del componente
 interface ButtonProps {
   children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-const Button: React.FC<ButtonProps> = ({ children }) => {
+const Button: React.FC<ButtonProps> = ({ children, onClick }) => {
   return (
     <button
       className="
@@ -22,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({ children }) => {
         ease-in-out
         active:scale-95
       "
+      onClick={onClick}
     >
       {children}
     </button>
