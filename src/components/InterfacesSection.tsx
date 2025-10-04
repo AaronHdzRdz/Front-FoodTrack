@@ -1,8 +1,16 @@
-// components/InterfacesSection.tsx
 'use client';
+import React from "react";
 import { UsersGroupRounded, Devices, ChartSquare } from "@solar-icons/react";
 
-const InterfaceCard = ({ Icon, title, subtitle, description }) => (
+interface InterfaceCardProps {
+    Icon: React.ElementType; 
+    title: string;
+    subtitle: string;
+    description: string;
+}
+
+// ACTUALIZADO: Aplicación del tipado
+const InterfaceCard = ({ Icon, title, subtitle, description }: InterfaceCardProps) => (
     <div className="flex flex-col border-[1.5px] border-gray-300 bg-gray-50 gap-6 pb-4 rounded-2xl">
         <div className="flex flex-col justify-center bg-Blue-700/10 rounded-t-2xl">
             <div className="flex flex-col items-center p-6 gap-4">
@@ -27,6 +35,7 @@ const InterfaceCard = ({ Icon, title, subtitle, description }) => (
         </div>
     </div>
 );
+
 
 const InterfacesSection = () => {
   return (
