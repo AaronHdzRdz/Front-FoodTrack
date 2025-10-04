@@ -1,8 +1,15 @@
 // components/FeaturesSection.tsx
 'use client';
+import React from "react"; // NUEVO: Importar React para tipado
 import { CartLarge2, Printer, ClockCircle, UsersGroupRounded, ChartSquare } from "@solar-icons/react";
 
-const FeatureCard = ({ Icon, title, description }) => (
+interface FeatureCardProps {
+    Icon: React.ElementType; 
+    title: string;
+    description: string;
+}
+
+const FeatureCard = ({ Icon, title, description }: FeatureCardProps) => (
     <div className="flex flex-col w-full items-start gap-4 px-4 py-5 self-stretch rounded-[14px] border-[1.5px] border-gray-300 bg-gray-50">
         <div className="flex flex-col gap-4">
             <div className="flex w-fit h-fit p-3 bg-blue-700/10 rounded-2xl">
