@@ -2,7 +2,13 @@
 'use client';
 import { Box, Buildings2, QrCode } from "@solar-icons/react";
 
-const FutureFeatureCard = ({ Icon, title, description }) => (
+interface FutureFeatureCardProps {
+    Icon: React.ElementType; 
+    title: string;
+    description: string;
+}
+
+const FutureFeatureCard = ({ Icon, title, description }: FutureFeatureCardProps) => (
     <div className="flex flex-col bg-zinc-50 border-Blue-200 rounded-2xl border-2">
         <div className="flex flex-col items-center gap-4 px-6 py-3">
             <div className="flex items-center bg-Blue-200/20 rounded-2xl p-4">

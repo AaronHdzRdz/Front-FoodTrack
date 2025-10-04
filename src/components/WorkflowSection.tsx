@@ -1,5 +1,15 @@
 // components/WorkflowSection.tsx
-const WorkflowStep = ({ step, title, description, imgSrc, imgAlt }) => (
+import React from "react"; 
+interface WorkflowStepProps {
+    step: string; 
+    title: string;
+    description: string;
+    imgSrc: string;
+    imgAlt: string;
+}
+
+// ACTUALIZADO: Aplicación del tipado
+const WorkflowStep = ({ step, title, description, imgSrc, imgAlt }: WorkflowStepProps) => (
     <div className="flex flex-col items-center gap-6">
         <div className="bg-Blue-700 rounded-full text-gray-50 w-fit aspect-square p-6">
             <p className="text-gray-50 text-center font-[Arial] text-[40px] not-italic font-normal leading-[40px]">
