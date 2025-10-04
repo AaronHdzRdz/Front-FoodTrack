@@ -7,6 +7,11 @@
   --color-medium-blue: #1a399a;
   --color-light-blue: #7ec2fd;
   --color-very-light-blue: #c5e3ee;
+  --ft-navy-900: oklch(0.2329 0.0921 269.05);
+  --ft-Blue-700: oklch(0.3899 0.1623 265.48);
+  --ft-Blue-200: oklch(0.7915 0.1091 245.93);
+  --ft-Blue-50: oklch(0.8974 0.0351 221.91);
+  --ft-estado-exito: oklch(0.7289 0.2119 147.82);
 }
 
 @theme inline {
@@ -14,12 +19,17 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-navy-900: var(--ft-navy-900);
+  --color-Blue-700: var(--ft-Blue-700);
+  --color-Blue-200: var(--ft-Blue-200);
+  --color-Blue-50: var(--ft-Blue-50);
+  --color-estado-exito: var(--ft-estado-exito);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-gray-50);
+    --foreground: var(--color-gray-900);
   }
 }
 
