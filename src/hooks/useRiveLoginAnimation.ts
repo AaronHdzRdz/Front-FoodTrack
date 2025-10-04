@@ -1,5 +1,5 @@
 import { useRive, useStateMachineInput } from "@rive-app/react-canvas";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react"; 
 
 const STATE_MACHINE = "State Machine 1";
 const ARTBOARD = "Artboard";
@@ -20,7 +20,7 @@ export function useRiveLoginAnimation(
   const typePassword = useStateMachineInput(rive, STATE_MACHINE, "typePassword");
   const verPassword = useStateMachineInput(rive, STATE_MACHINE, "verPassword");
 
-  const syncRiveFromState = () => {
+  const syncRiveFromState = useCallback(() => {
     if (!typeEmail || !typePassword || !verPassword) return;
 
     const uHas = userHasText();
@@ -36,18 +36,18 @@ export function useRiveLoginAnimation(
     } else {
       verPassword.value = true;
     }
-  };
+  }, [typeEmail, typePassword, verPassword, userHasText, passHasText, showing]); 
 
   useEffect(() => {
     if (!rive) return;
-    syncRiveFromState();
-  }, [showing, rive, userHasText, passHasText]);
+    syncRiveFromState(); 
+  }, [showing, rive, syncRiveFromState]); 
 
   useEffect(() => {
     if (!typeEmail || !typePassword || !verPassword) return;
-    // Sincroniza el estado inicial al cargar los inputs
-    syncRiveFromState();
-  }, [typeEmail, typePassword, verPassword]);
+    
+    syncRiveFromState(); 
+  }, [typeEmail, typePassword, verPassword, syncRiveFromState])
 
   return { RiveComponent, syncRiveFromState };
 }
