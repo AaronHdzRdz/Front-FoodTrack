@@ -5,7 +5,11 @@ import NavTabs from "./NavTabs";
 import ProductGrid from "./ProductGrid";
 import { products } from "@/data/products";
 
-export default function DashboardShell() {
+type Props = {
+  children?: React.ReactNode;
+};
+
+export default function DashboardShell({ children }: Props) {
   const [search, setSearch] = useState("");
 
   return (
@@ -13,7 +17,7 @@ export default function DashboardShell() {
       <Header placeholder={`Buscar entre ${products.length} productos...`} value={search} onSearch={setSearch} />
       <main className="flex flex-col">
         <NavTabs />
-        <ProductGrid searchTerm={search} />
+        {children ?? <ProductGrid searchTerm={search} />}
 
         <div className="fixed right-4 md:right-6 bottom-4 md:bottom-6 z-50">
           <button
