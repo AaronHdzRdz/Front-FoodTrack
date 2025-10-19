@@ -35,7 +35,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-Blue-50 px-4 py-8">
-      <div className="w-full max-w-md md:max-w-lg lg:max-w-2xl bg-white rounded-2xl shadow-lg p-8 md:p-12 flex flex-col gap-8">
+      <div className="w-full max-w-md md:max-w-lg lg:max-w-2xl bg-gray-50 rounded-2xl shadow-lg p-8 md:p-12 flex flex-col gap-8">
         <div className="flex flex-col items-center gap-3">
           <img className="w-36 md:w-44" src="/FoodTrack.svg" alt="FoodTrack logo" />
           <h1 className="text-gray-800 text-xl md:text-2xl font-actor font-medium">Bienvenido</h1>
