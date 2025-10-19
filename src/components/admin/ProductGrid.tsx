@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import ProductCard from "./ProductCard";
+import CategoryButton from "./CategoryButton";
 import { products as initialProducts, categories } from "../../data/products";
 
 type Props = {
@@ -23,17 +24,7 @@ export default function ProductGrid({ searchTerm = "" }: Props) {
       <div className="overflow-x-auto">
         <div className="flex flex-row gap-3 md:gap-4 w-max">
           {categories.map((c) => (
-            <button
-              key={c}
-              onClick={() => setFilter(c)}
-              className={
-                c === filter
-                  ? "p-2 md:p-3 border-Blue-700 bg-Blue-700 text-gray-50 border-2 rounded-full w-fit h-fit text-sm md:text-base"
-                  : "p-2 md:p-3 border-gray-300 text-gray-700 border-2 rounded-full w-fit h-fit text-sm md:text-base"
-              }
-            >
-              {c}
-            </button>
+            <CategoryButton key={c} label={c} active={c === filter} onClick={() => setFilter(c)} />
           ))}
         </div>
       </div>
