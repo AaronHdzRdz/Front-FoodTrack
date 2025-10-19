@@ -1,30 +1,20 @@
 import React from 'react';
 
 // Definimos la interfaz para las propiedades del componente
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  variant?: "outline" | "default";
 }
 
-const Button: React.FC<ButtonProps> = ({ children, onClick }) => {
+const Button: React.FC<ButtonProps> = ({ children, variant = "default", className, ...props }) => {
+  const base = "rounded-[10px] shadow-[0_4px_4px_0.02px_rgba(0,0,0,0.25)] font-medium text-xl py-3 px-8 transition duration-300 ease-in-out active:scale-95";
+  const variantClasses =
+    variant === "outline"
+      ? "bg-white border border-blue-300 text-blue-700 hover:bg-blue-50"
+      : "bg-[#05765F] text-white";
+
   return (
-    <button
-      className="
-        rounded-[10px]
-        bg-[#05765F]
-        shadow-[0_4px_4px_0.02px_rgba(0,0,0,0.25)]
-        text-white
-        font-medium
-        text-xl
-        py-3
-        px-8
-        transition
-        duration-300
-        ease-in-out
-        active:scale-95
-      "
-      onClick={onClick}
-    >
+    <button className={`${base} ${variantClasses} ${className ?? ""}`.trim()} {...props}>
       {children}
     </button>
   );
