@@ -1,6 +1,8 @@
 "use client";
 
+import { ChevronDownIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button"
 
 type Props = {
   options: string[];
@@ -29,7 +31,7 @@ export default function CashSelector({ options, defaultValue, onChange, classNam
   }, [selected, onChange]);
 
   return (
-    <div ref={ref} className={`relative ${className ?? "w-full max-w-sm"}`}>
+    <div ref={ref} className={`relative ${className ?? "w-fit h-fit max-w-sm"}`}>
       <button
         type="button"
         aria-haspopup="menu"
@@ -41,15 +43,7 @@ export default function CashSelector({ options, defaultValue, onChange, classNam
             p-2 flex-row flex justify-between h-fit"
       >
         <span className="text-gray-900 font-sans text-sm font-normal leading-5 not-italic">{selected}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-5 w-5 text-gray-400 transform transition-transform ${open ? "rotate-180" : "rotate-0"}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <ChevronDownIcon className="text-gray-900"/>
       </button>
 
       {open && (
