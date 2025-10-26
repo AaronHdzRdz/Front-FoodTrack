@@ -27,21 +27,8 @@ const chartConfig = {
 export type PieDatum = { name: string; value: number }
 
 export function ChartPieCategory({ data }: { data: PieDatum[] }) {
-  const hasData = !!(data && data.length > 0)
-
-  if (!hasData) {
-    return (
-      <Card className="border-none shadow-none py-0 px-0">
-        <CardContent className="flex-1 pb-0 px-0 flex items-center justify-center">
-          <div className="text-center text-sm text-muted-foreground">
-            No hay datos disponibles para mostrar.
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  const chartDataToUse = data!
+  // Normalizar datos para que los hooks se llamen siempre en el mismo orden
+  const chartDataToUse = data ?? []
 
   const colors = useMemo(() => {
     const count = chartDataToUse.length
@@ -58,7 +45,21 @@ export function ChartPieCategory({ data }: { data: PieDatum[] }) {
       const light = Math.round(lightStart + (lightEnd - lightStart) * t)
       return `hsl(${hue} ${saturation}% ${light}%)`
     })
-  }, [])
+  }, [chartDataToUse.length])
+
+  const hasData = chartDataToUse.length > 0
+
+  if (!hasData) {
+    return (
+      <Card className="border-none shadow-none py-0 px-0">
+        <CardContent className="flex-1 pb-0 px-0 flex items-center justify-center">
+          <div className="text-center text-sm text-muted-foreground">
+            No hay datos disponibles para mostrar.
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
   return (
     <Card className="border-none shadow-none py-0 px-0">
       <CardContent className="flex-1 pb-0 px-0">
