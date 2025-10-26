@@ -1,6 +1,7 @@
 "use client";
 import { MagniferOutline, LogoutOutline } from "solar-icon-set";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   placeholder?: string;
@@ -12,6 +13,7 @@ type Props = {
 
 export default function Header({ placeholder, value, onSearch, showSearch = true }: Props) {
   const [local, setLocal] = useState<string>(value ?? "");
+  const router = useRouter();
 
   useEffect(() => {
     if (value !== undefined) setLocal(value);
@@ -41,13 +43,13 @@ export default function Header({ placeholder, value, onSearch, showSearch = true
               }}
             />
           </div>
-          <button className="text-Blue-700 flex flex-row items-center gap-2 ml-3 md:ml-6 text-sm md:text-base">
+          <button onClick={() => router.push('/login')} className="text-Blue-700 flex flex-row items-center gap-2 ml-3 md:ml-6 text-sm md:text-base">
             <LogoutOutline />
             <span className="hidden sm:inline">Salir</span>
           </button>
         </>
       ) : (
-        <button className="text-Blue-700 flex flex-row items-center gap-2 text-sm md:text-base">
+        <button onClick={() => router.push('/login')} className="text-Blue-700 flex flex-row items-center gap-2 text-sm md:text-base">
           <LogoutOutline />
           <span className="hidden sm:inline">Salir</span>
         </button>
