@@ -62,3 +62,5 @@ export function Calendar22({
     </div>
   )
 }
+
+export default Calendar22
