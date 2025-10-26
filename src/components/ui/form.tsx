@@ -45,7 +45,19 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
-  const { getFieldState } = useFormContext()
+
+  // Get the react-hook-form context. We don't destructure directly to
+  // avoid a runtime "cannot destructure property of null" when this hook is
+  // used outside of a FormProvider. Provide a clear error message instead.
+  const formContext = useFormContext()
+
+  if (!formContext) {
+    throw new Error(
+      "react-hook-form context is missing. Make sure form fields are rendered inside a <Form> (FormProvider) from '@/components/ui/form'."
+    )
+  }
+
+  const { getFieldState } = formContext
   const formState = useFormState({ name: fieldContext.name })
   const fieldState = getFieldState(fieldContext.name, formState)
 
