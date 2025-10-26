@@ -47,7 +47,7 @@ export default function ReportsPage() {
       <NavTabs />
       <main className="m-10">
         <div className="gap-8 flex flex-col">
-          <section className="flex flex-row justify-between">
+          <section className="flex flex-col md:flex-row justify-between">
             <div className="flex flex-col gap-2">
               <h1 className="text-gray-900 font-sans text-2xl not-italic font-normal leading-9">
                 Panel de Reportes
@@ -56,11 +56,11 @@ export default function ReportsPage() {
                 Análisis completo del desempeño del restaurante
               </p>
             </div>
-            <div className="flex flex-row gap-4 items-center">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
               <div className="">
                 <Calendar22 />
               </div>
-              <button className=" h-fit flex justify-center items-end gap-4 rounded-lg bg-navy-900 p-2.5 text-white">
+              <button className=" h-fit flex justify-center items-center gap-4 rounded-lg bg-navy-900 p-2.5 text-white">
                 <DownloadMinimalisticOutline />
                 <p className=" font-sans text-sm not-italic font-normal leading-5">
                   Exportar Reporte
@@ -69,7 +69,7 @@ export default function ReportsPage() {
             </div>
           </section>
 
-          <section className="gap-6 grid grid-cols-4">
+          <section className="gap-6 flex flex-col md:grid md:grid-cols-4">
             {topStats.map((s) => (
               <CardContent key={s.id} variant="1">
                 <StatCard {...s} trendIcon={<CourseUpOutline />} />
@@ -77,7 +77,7 @@ export default function ReportsPage() {
             ))}
           </section>
 
-          <section className="grid grid-cols-2 gap-8">
+          <section className="flex flex-col md:grid md:grid-cols-2 gap-8">
             <CardContent
               variant="2"
               icon={<ClockCircleOutline />}
@@ -94,7 +94,7 @@ export default function ReportsPage() {
             </CardContent>
           </section>
 
-          <section className="grid grid-cols-3 gap-8">
+          <section className="flex flex-col md:grid md:grid-cols-3 gap-8">
             <CardContent
               variant="2"
               className="col-span-1 "
@@ -112,7 +112,7 @@ export default function ReportsPage() {
               icon={<WalletOutline />}
               title="Análisis Financiero"
             >
-              <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
                 <FinancialMetric
                   wrapperClass="border-2 rounded-2xl p-4 border-emerald-300 bg-emerald-50/50 flex flex-row justify-between items-center"
                   iconWrapperClass="text-white bg-[#00BC7D] p-3 w-fit rounded-2xl"
@@ -175,7 +175,7 @@ export default function ReportsPage() {
             />
           </CardContent>
 
-          <section className="grid grid-cols-2 gap-8">
+          <section className="flex flex-col md:grid md:grid-cols-2 gap-8">
             <CardContent
               variant="2"
               icon={<ChairOutline />}
