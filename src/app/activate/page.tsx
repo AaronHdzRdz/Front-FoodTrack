@@ -16,14 +16,14 @@ export default function ActivatePage() {
             Bienvenido
           </h1>
           <p className="text-gray-600 text-center text-sm md:text-base">
-            Ingresa tu clave de activación del restaurante
+            Ingresa tu clave del restaurante
           </p>
         </div>
         <div className="flex flex-col gap-5">
-             <InputComponent ref={undefined} placeholder="Clave de activación" icon={<KeyBold/>} />
+          <InputComponent ref={undefined} placeholder="Clave del restaurante" icon={<KeyBold />} />
           <Button onClick={undefined} className="w-full">Continuar</Button>
         </div>
-        
+
       </div>
     </main>
   );

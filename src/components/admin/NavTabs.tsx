@@ -4,13 +4,13 @@ import { usePathname } from "next/navigation";
 import {
   ChatSquare2Outline,
   DollarOutline,
-  HomeAngleOutline,
+  ChefHatOutline,
   SettingsOutline,
   WidgetOutline,
 } from "solar-icon-set";
 
 const tabs = [
-  { href: "/admin", label: "Inicio", icon: HomeAngleOutline },
+  { href: "/admin", label: "Platillos", icon: ChefHatOutline },
   { href: "/admin/accounts", label: "Cuentas", icon: WidgetOutline },
   { href: "/admin/reports", label: "Reportes", icon: ChatSquare2Outline },
   { href: "/admin/cash", label: "Caja", icon: DollarOutline },

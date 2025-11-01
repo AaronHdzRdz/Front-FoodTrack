@@ -15,7 +15,6 @@ import MovementCard from "@/components/admin/MovementCard";
 import { cashMovements } from "@/data/cashMovements";
 import { openingBalances } from "@/data/openingBalances";
 import SummaryCard from "@/components/admin/SummaryCard";
-import { CalendarDayButton } from "@/components/ui/calendar";
 
 export default function CashPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
