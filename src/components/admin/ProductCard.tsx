@@ -1,3 +1,4 @@
+"use client";
 import { Product } from "../../data/products";
 
 type Props = {
@@ -15,7 +16,7 @@ export default function ProductCard({ product }: Props) {
       : "bg-green-50 text-green-700";
 
   return (
-    <button className="relative rounded-2xl border-gray-100 border-2 overflow-hidden text-left bg-white shadow-sm hover:shadow-md transition">
+    <button className="relative w-full rounded-2xl border-gray-100 border-2 overflow-hidden text-left bg-white shadow-sm hover:shadow-md transition">
       <img src={product.image} alt={product.title} className="w-full h-36 md:h-44 object-cover" />
 
       {/* Stock badge */}
