@@ -1,6 +1,5 @@
 "use client";
 import {
-    useEffect,
     useRef,
     useState,
     useCallback,
@@ -13,13 +12,17 @@ import {
     DollarMinimalisticOutline,
     DollarOutline,
     FileTextOutline,
+    GalleryOutline,
     TagOutline,
-    TrashBinTrashOutline,
 } from "solar-icon-set";
 import { DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "../ui/drawer";
-import { type Product, categories as categoriesData } from "../../data/products";
 import { useAutoResizeTextArea } from "@/hooks/useAutoResizeTextArea";
-import { OTHER_CATEGORY, validateProduct } from "@/lib/validation/product";
+import {
+    OTHER_CATEGORY,
+    validateProduct,
+    type ProductValidationErrors,
+} from "@/lib/validation/product";
+import FileDropzone from "./FileDropzone";
 
 type SubTitleProps = {
     title: string;
@@ -37,11 +40,7 @@ function SubTitle({ icon, title }: SubTitleProps) {
     );
 }
 
-type Props = {
-    product?: Product | null;
-};
-
-export default function ProductDetailsDrawerContent({ product }: Props) {
+export default function ProductAddDrawerContent() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -49,49 +48,25 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
     const [productName, setProductName] = useState("");
     const [description, setDescription] = useState("");
     const [stock, setStock] = useState<string>("");
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<string[]>([
+        "Tacos",
+        "Bebidas",
+        "Postres",
+        "Aperitivos",
+    ]);
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [newCategoryInput, setNewCategoryInput] = useState("");
     const [cost, setCost] = useState<string>("");
     const [price, setPrice] = useState<string>("");
-    const imageUrl = product?.image ?? "https://placehold.co/1200x600?text=Producto";
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
-    // Inicializar categorías desde data (excluyendo "Todos") y sincronizar producto seleccionado
-    useEffect(() => {
-        const baseCategories = categoriesData.filter((c) => c !== "Todos");
-        setCategories(baseCategories);
-    }, []);
-
-    useEffect(() => {
-        if (!product) return;
-        setProductName(product.title ?? "");
-        setDescription(product.description ?? "");
-        setStock(String(product.stock ?? 0));
-        setSelectedCategory(product.category ?? "");
-        setCost(
-            typeof product.cost === "number" && !Number.isNaN(product.cost)
-                ? product.cost.toFixed(2)
-                : ""
-        );
-        setPrice(
-            typeof product.price === "number" && !Number.isNaN(product.price)
-                ? product.price.toFixed(2)
-                : ""
-        );
-    }, [product]);
+    // Errores de validación
+    const [errors, setErrors] = useState<ProductValidationErrors>({});
 
     // Auto-resize del textarea con hook robusto
     useAutoResizeTextArea(textareaRef, description);
 
     // Handlers reutilizables con tipos
-    const handleIntegerKeyDown = useCallback(
-        (event: KeyboardEvent<HTMLInputElement>) => {
-            const blocked = new Set([".", ",", "e", "E", "-"]);
-            if (blocked.has(event.key)) event.preventDefault();
-        },
-        []
-    );
-
     const handleMonetaryKeyDown = useCallback(
         (event: KeyboardEvent<HTMLInputElement>) => {
             // Permitimos decimales (',' o '.') pero bloqueamos '-' y notación científica
@@ -127,74 +102,70 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
         return Number.isFinite(m) ? m : 0;
     })();
 
-    const handleEdit = useCallback(() => {
-        const { errors, values } = validateProduct({
-            productName,
-            description,
-            stock,
-            selectedCategory,
-            newCategoryInput,
-            cost,
-            price,
-        });
+    const handleSubmit = useCallback(() => {
+        const { errors: nextErrors, values } = validateProduct(
+            {
+                productName,
+                description,
+                stock,
+                selectedCategory,
+                newCategoryInput,
+                cost,
+                price,
+                imageFile,
+            },
+            { requireImage: true }
+        );
 
-        if (!values) {
-            console.warn("[Producto - Editar] Validación fallida:", errors);
-            return;
-        }
+        setErrors(nextErrors);
+        if (!values) return;
 
-        const payload = { id: product?.id ?? "(sin-id)", ...values };
-        console.log("[Producto - Editar]", payload);
-        // cerrar drawer solo si todo fue válido
+        const payload = { ...values, image: imageFile };
+        console.log("[Producto - Nuevo]", payload);
+        // Cerrar el drawer tras envío exitoso
         closeRef.current?.click();
-    }, [product?.id, productName, description, stock, selectedCategory, newCategoryInput, cost, price]);
-
-    const handleDelete = useCallback(() => {
-        if (!product?.id) {
-            console.warn("[Producto - Eliminar] Falta id del producto");
-        } else {
-            console.log("[Producto - Eliminar]", { id: product.id });
-        }
-        // cerrar de inmediato
-        closeRef.current?.click();
-    }, [product?.id]);
+    }, [productName, imageFile, stock, selectedCategory, newCategoryInput, cost, price, description]);
 
     return (
         <DrawerContent className="bg-gray-50 flex flex-col">
             <DrawerHeader className="px-8 py-6 bg-navy-900 md:sticky md:top-0 md:z-10">
                 <DrawerTitle className="text-white font-arial text-[24px] font-bold leading-[32px]">
-                    Detalles del Producto
+                    Agregar Nuevo Producto
                 </DrawerTitle>
             </DrawerHeader>
             <div className="px-5 py-2 gap-5 flex flex-col flex-1 overflow-y-auto">
-                <img
-                    src={imageUrl}
-                    alt={productName || "Imagen del producto"}
-                    className="w-full h-70 rounded-2xl object-cover"
-                />
-                <div className="flex justify-center items-center px-3 py-1 rounded-2xl bg-Blue-50 w-fit">
-                    <p className="text-navy-900 font-arial text-[16px] font-normal leading-[24px]">
-                        {selectedCategory || "—"}
-                    </p>
-                </div>
-
                 <div className="flex flex-col gap-2">
                     <SubTitle icon={<TagOutline />} title="Nombre del Producto" />
                     <input
                         type="text"
                         autoCapitalize="off"
-                        value={productName}
                         onChange={(e) => setProductName(e.target.value)}
                         placeholder="Ej. Tacos al Pastor"
-                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500"
+                        aria-invalid={!!errors.productName}
+                        className={`bg-gray-100 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 border ${errors.productName ? "border-negativo" : "border-gray-300"}`}
                     />
+                    {errors.productName && (
+                        <p className="text-negativo text-sm">{errors.productName}</p>
+                    )}
                 </div>
-
+                <div className="flex flex-col gap-2">
+                    <SubTitle icon={<GalleryOutline />} title="Imagen del Producto *" />
+                    <FileDropzone
+                        accept="image/png,image/jpeg,image/gif"
+                        maxSizeMB={5}
+                        onFileSelect={(file) => {
+                            setImageFile((Array.isArray(file) ? file[0] : file) ?? null);
+                        }}
+                        className="bg-gray-100"
+                    />
+                    {errors.imageFile && (
+                        <p className="text-negativo text-sm">{errors.imageFile}</p>
+                    )}
+                </div>
                 <div className="flex flex-col gap-2">
                     <SubTitle icon={<FileTextOutline />} title="Descripción" />
                     <textarea
                         ref={textareaRef}
-                        value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Describe el producto..."
                         className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 resize-none  min-h-[48px] leading-6 h-full"
@@ -207,22 +178,27 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                     <input
                         type="number"
                         autoCapitalize="off"
-                        value={stock}
                         onChange={(e) => setStock(e.target.value)}
                         placeholder="Ej. 10"
-                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500"
+                        aria-invalid={!!errors.stock}
+                        className={`bg-gray-100 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 border ${errors.stock ? "border-negativo" : "border-gray-300"}`}
                         step={1}
-                        onKeyDown={handleIntegerKeyDown}
                     />
+                    {errors.stock && (
+                        <p className="text-negativo text-sm">{errors.stock}</p>
+                    )}
                 </div>
-
                 <div className="flex flex-col gap-2">
                     <SubTitle icon={<TagOutline />} title="Categoría" />
                     <select
                         value={selectedCategory}
                         onChange={handleCategoryChange}
-                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 appearance-none"
+                        aria-invalid={!!errors.category}
+                        className={`bg-gray-100 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 appearance-none border ${errors.category ? "border-negativo" : "border-gray-300"}`}
                     >
+                        <option value="" disabled>
+                            Selecciona una categoría
+                        </option>
                         {categories.map((cat) => (
                             <option key={cat} value={cat}>
                                 {cat}
@@ -237,7 +213,8 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                                 value={newCategoryInput}
                                 onChange={(e) => setNewCategoryInput(e.target.value)}
                                 placeholder="Escribe la nueva categoría"
-                                className="flex-grow bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500"
+                                aria-invalid={!!errors.category}
+                                className={`flex-grow bg-gray-100 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 border ${errors.category ? "border-negativo" : "border-gray-300"}`}
                             />
                             <button
                                 onClick={handleAddCategory}
@@ -247,6 +224,9 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                                 Agregar
                             </button>
                         </div>
+                    )}
+                    {errors.category && (
+                        <p className="text-negativo text-sm">{errors.category}</p>
                     )}
                 </div>
 
@@ -260,10 +240,10 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                             <input
                                 type="number"
                                 autoCapitalize="off"
-                                value={cost}
                                 onChange={(e) => setCost(e.target.value)}
                                 placeholder="Ej. 10.00"
-                                className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 pl-8 pr-16 text-gray-900 placeholder:text-gray-500 w-full"
+                                aria-invalid={!!errors.cost}
+                                className={`bg-gray-100 rounded-2xl px-4 py-3 pl-8 pr-16 text-gray-900 placeholder:text-gray-500 w-full border ${errors.cost ? "border-negativo" : "border-gray-300"}`}
                                 step="0.01"
                                 min="0"
                                 onKeyDown={handleMonetaryKeyDown}
@@ -272,6 +252,9 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                                 MXN
                             </span>
                         </div>
+                        {errors.cost && (
+                            <p className="text-negativo text-sm">{errors.cost}</p>
+                        )}
                     </div>
                     <div className=" gap-2 flex flex-col col-span-1">
                         <SubTitle
@@ -285,10 +268,10 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                             <input
                                 type="number"
                                 autoCapitalize="off"
-                                value={price}
                                 onChange={(e) => setPrice(e.target.value)}
                                 placeholder="Ej. 15.00"
-                                className="bg-Blue-200/20 border-Blue-200 rounded-2xl px-4 py-3 pl-8 pr-16 text-Blue-700 placeholder:text-gray-500 w-full"
+                                aria-invalid={!!errors.price}
+                                className={`bg-Blue-200/20 rounded-2xl px-4 py-3 pl-8 pr-16 text-Blue-700 placeholder:text-gray-500 w-full border ${errors.price ? "border-negativo" : "border-Blue-200"}`}
                                 step="0.01"
                                 min="0"
                                 onKeyDown={handleMonetaryKeyDown}
@@ -297,6 +280,9 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                                 MXN
                             </span>
                         </div>
+                        {errors.price && (
+                            <p className="text-negativo text-sm">{errors.price}</p>
+                        )}
                     </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 items-start self-stretch px-[16px] py-[12px] rounded-2xl border border-Blue-200 bg-Blue-200/20">
@@ -309,11 +295,13 @@ export default function ProductDetailsDrawerContent({ product }: Props) {
                 </div>
             </div>
             <DrawerFooter className="px-8 gap-4 py-4 flex flex-row justify-between items-center border-t-gray-500 border-t-2 w-full bg-gray-100">
-                <button onClick={handleDelete} className="w-fit text-negativo flex gap-2 items-center border-negativo/50 border-2 rounded-2xl  py-4 px-3">
-                    <TrashBinTrashOutline />Eliminar
-                </button>
-                <button onClick={handleEdit} className="w-full bg-Blue-700 rounded-2xl py-4 px-3 text-white">
-                    Editar Producto
+                <DrawerClose asChild>
+                    <div className="w-fit text-gray-700 flex gap-2 items-center border-gray-700/50 border-2 rounded-2xl  py-4 px-3">
+                        Cancelar
+                    </div>
+                </DrawerClose>
+                <button onClick={handleSubmit} className="w-full bg-Blue-700 rounded-2xl py-4 px-3 text-white">
+                    Agregar
                 </button>
                 <DrawerClose asChild>
                     <button ref={closeRef} className="hidden" aria-hidden />

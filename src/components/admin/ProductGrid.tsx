@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 import ProductCard from "./ProductCard";
 import CategoryButton from "./CategoryButton";
-import { products as initialProducts, categories } from "../../data/products";
+import { products as initialProducts, categories, type Product } from "../../data/products";
 import { Drawer, DrawerTrigger } from "../ui/drawer";
 import ProductDetailsDrawerContent from "./ProductDetailsDrawerContent";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -14,6 +14,7 @@ type Props = {
 export default function ProductGrid({ searchTerm = "" }: Props) {
   const [filter, setFilter] = useState<string>("Todos");
   const [open, setOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const isMd = useMediaQuery("(min-width: 768px)");
 
   const filteredByCategory = filter === "Todos" ? initialProducts : initialProducts.filter((p) => p.category === filter);
@@ -37,14 +38,14 @@ export default function ProductGrid({ searchTerm = "" }: Props) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
           {filtered.map((p) => (
-            <DrawerTrigger key={p.id}>
+            <DrawerTrigger key={p.id} onClick={() => setSelectedProduct(p)}>
               <ProductCard product={p} />
             </DrawerTrigger>
           ))}
         </div>
       </div>
 
-      <ProductDetailsDrawerContent />
+      <ProductDetailsDrawerContent product={selectedProduct} />
     </Drawer>
   );
 }
