@@ -16,8 +16,10 @@ import {
     TagOutline,
     TrashBinTrashOutline,
 } from "solar-icon-set";
-import { DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "../ui/drawer";
+import { DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "../ui/drawer";
+import { type Product, categories as categoriesData } from "../../data/products";
 import { useAutoResizeTextArea } from "@/hooks/useAutoResizeTextArea";
+import { OTHER_CATEGORY, validateProduct } from "@/lib/validation/product";
 
 type SubTitleProps = {
     title: string;
@@ -35,27 +37,48 @@ function SubTitle({ icon, title }: SubTitleProps) {
     );
 }
 
-const OTHER_CATEGORY = "other" as const;
+type Props = {
+    product?: Product | null;
+};
 
-export default function ProductDetailsDrawerContent() {
+export default function ProductDetailsDrawerContent({ product }: Props) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const closeRef = useRef<HTMLButtonElement>(null);
 
     // Estado de formulario controlado
-    const [productName, setProductName] = useState("Tacos al Pastor");
-    const [description, setDescription] = useState(
-        "Deliciosos tacos de cerdo marinado con piña, cilantro y cebolla. Servidos en tortilla de maíz recién hecha."
-    );
-    const [stock, setStock] = useState<string>("10");
-    const [categories, setCategories] = useState<string[]>([
-        "Tacos",
-        "Bebidas",
-        "Postres",
-        "Aperitivos",
-    ]);
-    const [selectedCategory, setSelectedCategory] = useState<string>("Tacos");
+    const [productName, setProductName] = useState("");
+    const [description, setDescription] = useState("");
+    const [stock, setStock] = useState<string>("");
+    const [categories, setCategories] = useState<string[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [newCategoryInput, setNewCategoryInput] = useState("");
-    const [cost, setCost] = useState<string>("10.00");
-    const [price, setPrice] = useState<string>("15.00");
+    const [cost, setCost] = useState<string>("");
+    const [price, setPrice] = useState<string>("");
+    const imageUrl = product?.image ?? "https://placehold.co/1200x600?text=Producto";
+
+    // Inicializar categorías desde data (excluyendo "Todos") y sincronizar producto seleccionado
+    useEffect(() => {
+        const baseCategories = categoriesData.filter((c) => c !== "Todos");
+        setCategories(baseCategories);
+    }, []);
+
+    useEffect(() => {
+        if (!product) return;
+        setProductName(product.title ?? "");
+        setDescription(product.description ?? "");
+        setStock(String(product.stock ?? 0));
+        setSelectedCategory(product.category ?? "");
+        setCost(
+            typeof product.cost === "number" && !Number.isNaN(product.cost)
+                ? product.cost.toFixed(2)
+                : ""
+        );
+        setPrice(
+            typeof product.price === "number" && !Number.isNaN(product.price)
+                ? product.price.toFixed(2)
+                : ""
+        );
+    }, [product]);
 
     // Auto-resize del textarea con hook robusto
     useAutoResizeTextArea(textareaRef, description);
@@ -104,6 +127,38 @@ export default function ProductDetailsDrawerContent() {
         return Number.isFinite(m) ? m : 0;
     })();
 
+    const handleEdit = useCallback(() => {
+        const { errors, values } = validateProduct({
+            productName,
+            description,
+            stock,
+            selectedCategory,
+            newCategoryInput,
+            cost,
+            price,
+        });
+
+        if (!values) {
+            console.warn("[Producto - Editar] Validación fallida:", errors);
+            return;
+        }
+
+        const payload = { id: product?.id ?? "(sin-id)", ...values };
+        console.log("[Producto - Editar]", payload);
+        // cerrar drawer solo si todo fue válido
+        closeRef.current?.click();
+    }, [product?.id, productName, description, stock, selectedCategory, newCategoryInput, cost, price]);
+
+    const handleDelete = useCallback(() => {
+        if (!product?.id) {
+            console.warn("[Producto - Eliminar] Falta id del producto");
+        } else {
+            console.log("[Producto - Eliminar]", { id: product.id });
+        }
+        // cerrar de inmediato
+        closeRef.current?.click();
+    }, [product?.id]);
+
     return (
         <DrawerContent className="bg-gray-50 flex flex-col">
             <DrawerHeader className="px-8 py-6 bg-navy-900 md:sticky md:top-0 md:z-10">
@@ -113,13 +168,13 @@ export default function ProductDetailsDrawerContent() {
             </DrawerHeader>
             <div className="px-5 py-2 gap-5 flex flex-col flex-1 overflow-y-auto">
                 <img
-                    src="https://tse1.mm.bing.net/th/id/OIP.KnlN7pmj9o0fTnpxNVLczAHaD4?cb=12ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"
-                    alt="Imagen del producto"
+                    src={imageUrl}
+                    alt={productName || "Imagen del producto"}
                     className="w-full h-70 rounded-2xl object-cover"
                 />
                 <div className="flex justify-center items-center px-3 py-1 rounded-2xl bg-Blue-50 w-fit">
                     <p className="text-navy-900 font-arial text-[16px] font-normal leading-[24px]">
-                        Entradas
+                        {selectedCategory || "—"}
                     </p>
                 </div>
 
@@ -138,7 +193,7 @@ export default function ProductDetailsDrawerContent() {
                 <div className="flex flex-col gap-2">
                     <SubTitle icon={<FileTextOutline />} title="Descripción" />
                     <textarea
-
+                        ref={textareaRef}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Describe el producto..."
@@ -254,12 +309,15 @@ export default function ProductDetailsDrawerContent() {
                 </div>
             </div>
             <DrawerFooter className="px-8 gap-4 py-4 flex flex-row justify-between items-center border-t-gray-500 border-t-2 w-full bg-gray-100">
-                <button className="w-fit text-negativo flex gap-2 items-center border-negativo/50 border-2 rounded-2xl  py-4 px-3">
+                <button onClick={handleDelete} className="w-fit text-negativo flex gap-2 items-center border-negativo/50 border-2 rounded-2xl  py-4 px-3">
                     <TrashBinTrashOutline />Eliminar
                 </button>
-                <button className="w-full bg-Blue-700 rounded-2xl py-4 px-3 text-white">
+                <button onClick={handleEdit} className="w-full bg-Blue-700 rounded-2xl py-4 px-3 text-white">
                     Editar Producto
                 </button>
+                <DrawerClose asChild>
+                    <button ref={closeRef} className="hidden" aria-hidden />
+                </DrawerClose>
             </DrawerFooter>
         </DrawerContent>
     );

@@ -17,6 +17,11 @@ import {
 } from "solar-icon-set";
 import { DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "../ui/drawer";
 import { useAutoResizeTextArea } from "@/hooks/useAutoResizeTextArea";
+import {
+    OTHER_CATEGORY,
+    validateProduct,
+    type ProductValidationErrors,
+} from "@/lib/validation/product";
 import FileDropzone from "./FileDropzone";
 
 type SubTitleProps = {
@@ -34,8 +39,6 @@ function SubTitle({ icon, title }: SubTitleProps) {
         </div>
     );
 }
-
-const OTHER_CATEGORY = "other" as const;
 
 export default function ProductAddDrawerContent() {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -58,15 +61,7 @@ export default function ProductAddDrawerContent() {
     const [imageFile, setImageFile] = useState<File | null>(null);
 
     // Errores de validación
-    const [errors, setErrors] = useState<{
-        productName?: string;
-        imageFile?: string;
-        description?: string;
-        stock?: string;
-        category?: string;
-        cost?: string;
-        price?: string;
-    }>({});
+    const [errors, setErrors] = useState<ProductValidationErrors>({});
 
     // Auto-resize del textarea con hook robusto
     useAutoResizeTextArea(textareaRef, description);
@@ -107,67 +102,25 @@ export default function ProductAddDrawerContent() {
         return Number.isFinite(m) ? m : 0;
     })();
 
-    const parseMoney = (val: string) => parseFloat(val.replace(",", "."));
-
     const handleSubmit = useCallback(() => {
-        const nextErrors: typeof errors = {};
-
-        // Nombre
-        if (productName.trim().length < 3) {
-            nextErrors.productName = "El nombre es obligatorio (mín. 3 caracteres).";
-        }
-
-        // Imagen requerida
-        if (!imageFile) {
-            nextErrors.imageFile = "La imagen del producto es obligatoria.";
-        }
-
-        // Stock
-        const stockNum = Number.isFinite(Number(stock)) ? parseInt(stock, 10) : NaN;
-        if (Number.isNaN(stockNum) || stockNum < 0) {
-            nextErrors.stock = "Ingresa un stock válido (entero ≥ 0).";
-        }
-
-        // Categoría
-        if (!selectedCategory) {
-            nextErrors.category = "Selecciona una categoría.";
-        } else if (selectedCategory === OTHER_CATEGORY) {
-            if (newCategoryInput.trim().length < 3) {
-                nextErrors.category = "Escribe la nueva categoría (mín. 3 caracteres).";
-            }
-        }
-
-        // Costos
-        const costNum = parseMoney(cost);
-        if (!Number.isFinite(costNum) || costNum < 0) {
-            nextErrors.cost = "Ingresa un costo válido (≥ 0).";
-        }
-
-        const priceNum = parseMoney(price);
-        if (!Number.isFinite(priceNum) || priceNum <= 0) {
-            nextErrors.price = "Ingresa un precio válido (> 0).";
-        } else if (Number.isFinite(costNum) && priceNum < costNum) {
-            nextErrors.price = "El precio debe ser mayor o igual al costo.";
-        }
+        const { errors: nextErrors, values } = validateProduct(
+            {
+                productName,
+                description,
+                stock,
+                selectedCategory,
+                newCategoryInput,
+                cost,
+                price,
+                imageFile,
+            },
+            { requireImage: true }
+        );
 
         setErrors(nextErrors);
+        if (!values) return;
 
-        // Si hay errores, no continuamos
-        if (Object.keys(nextErrors).length > 0) return;
-
-        const finalCategory =
-            selectedCategory === OTHER_CATEGORY ? newCategoryInput.trim() : selectedCategory;
-
-        const payload = {
-            name: productName.trim(),
-            description: description.trim() || null,
-            stock: stockNum,
-            category: finalCategory,
-            cost: Number(costNum.toFixed(2)),
-            price: Number(priceNum.toFixed(2)),
-            image: imageFile,
-        };
-
+        const payload = { ...values, image: imageFile };
         console.log("[Producto - Nuevo]", payload);
         // Cerrar el drawer tras envío exitoso
         closeRef.current?.click();
