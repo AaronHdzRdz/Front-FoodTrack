@@ -17,6 +17,7 @@ import {
     TrashBinTrashOutline,
 } from "solar-icon-set";
 import { DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "../ui/drawer";
+import { useAutoResizeTextArea } from "@/hooks/useAutoResizeTextArea";
 
 type SubTitleProps = {
     title: string;
@@ -56,13 +57,8 @@ export default function ProductDetailsDrawerContent() {
     const [cost, setCost] = useState<string>("10.00");
     const [price, setPrice] = useState<string>("15.00");
 
-    // Auto-resize del textarea dependiente del contenido (sin event listeners)
-    useEffect(() => {
-        const textarea = textareaRef.current;
-        if (!textarea) return;
-        textarea.style.height = "auto";
-        textarea.style.height = `${textarea.scrollHeight}px`;
-    }, [description]);
+    // Auto-resize del textarea con hook robusto
+    useAutoResizeTextArea(textareaRef, description);
 
     // Handlers reutilizables con tipos
     const handleIntegerKeyDown = useCallback(
@@ -109,8 +105,8 @@ export default function ProductDetailsDrawerContent() {
     })();
 
     return (
-        <DrawerContent className="bg-gray-50 w-full md:w-1/2 max-h-full flex flex-col">
-            <DrawerHeader className="px-8 py-6 bg-navy-900 sticky top-0 z-10">
+    <DrawerContent className="bg-gray-50 flex flex-col">
+            <DrawerHeader className="px-8 py-6 bg-navy-900 md:sticky md:top-0 md:z-10">
                 <DrawerTitle className="text-white font-arial text-[24px] font-bold leading-[32px]">
                     Detalles del Producto
                 </DrawerTitle>
@@ -146,7 +142,8 @@ export default function ProductDetailsDrawerContent() {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Describe el producto..."
-                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 h-auto resize-none overflow-hidden min-h-[48px]"
+                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 resize-none overflow-hidden min-h-[48px] leading-6"
+                        rows={1}
                     ></textarea>
                 </div>
 

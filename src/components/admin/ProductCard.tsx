@@ -1,11 +1,13 @@
 "use client";
+import React, { forwardRef } from "react";
 import { Product } from "../../data/products";
 
-type Props = {
+type Props = React.HTMLAttributes<HTMLDivElement> & {
   product: Product;
 };
 
-export default function ProductCard({ product }: Props) {
+const ProductCard = forwardRef<HTMLDivElement, Props>(
+  ({ product, className = "", ...rest }, ref) => {
   const stock = product.stock ?? 0;
   const badgeText = stock === 0 ? "Agotado" : `${stock} en stock`;
   const badgeClass =
@@ -16,7 +18,11 @@ export default function ProductCard({ product }: Props) {
       : "bg-green-50 text-green-700";
 
   return (
-    <button className="relative w-full rounded-2xl border-gray-100 border-2 overflow-hidden text-left bg-white shadow-sm hover:shadow-md transition">
+    <div
+      ref={ref}
+      className={`relative w-full rounded-2xl border-gray-100 border-2 overflow-hidden text-left bg-white shadow-sm hover:shadow-md transition ${className}`}
+      {...rest}
+    >
       <img src={product.image} alt={product.title} className="w-full h-36 md:h-44 object-cover" />
 
       {/* Stock badge */}
@@ -32,6 +38,10 @@ export default function ProductCard({ product }: Props) {
         <h3 className="w-full text-navy-900 text-base md:text-lg font-medium leading-6">{product.title}</h3>
         <p className="text-Blue-700 font-actor text-lg md:text-2xl font-normal leading-6">${product.price.toFixed(2)}</p>
       </div>
-    </button>
+    </div>
   );
-}
+});
+
+ProductCard.displayName = "ProductCard";
+
+export default ProductCard;
