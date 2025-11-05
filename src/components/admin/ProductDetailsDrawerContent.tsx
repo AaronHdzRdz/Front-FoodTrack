@@ -105,7 +105,7 @@ export default function ProductDetailsDrawerContent() {
     })();
 
     return (
-    <DrawerContent className="bg-gray-50 flex flex-col">
+        <DrawerContent className="bg-gray-50 flex flex-col">
             <DrawerHeader className="px-8 py-6 bg-navy-900 md:sticky md:top-0 md:z-10">
                 <DrawerTitle className="text-white font-arial text-[24px] font-bold leading-[32px]">
                     Detalles del Producto
@@ -138,13 +138,13 @@ export default function ProductDetailsDrawerContent() {
                 <div className="flex flex-col gap-2">
                     <SubTitle icon={<FileTextOutline />} title="Descripción" />
                     <textarea
-                        ref={textareaRef}
+
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Describe el producto..."
-                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 resize-none overflow-hidden min-h-[48px] leading-6"
-                        rows={1}
-                    ></textarea>
+                        className="bg-gray-100 border-gray-300 rounded-2xl px-4 py-3 text-gray-900 placeholder:text-gray-500 resize-none  min-h-[48px] leading-6 h-full"
+                        rows={5}
+                    />
                 </div>
 
                 <div className="flex flex-col gap-2">

@@ -7,7 +7,7 @@ export function useAutoResizeTextArea(
     const resize = () => {
         const el = textarea.current;
         if (!el) return;
-        el.style.height = "auto";
+        el.style.height = "100px"; // Reset height to recalculate
         el.style.height = `${el.scrollHeight}px`;
     };
 
