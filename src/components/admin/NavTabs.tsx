@@ -7,11 +7,13 @@ import {
   ChefHatOutline,
   SettingsOutline,
   WidgetOutline,
+  UsersGroupRoundedOutline,
 } from "solar-icon-set";
 
 const tabs = [
   { href: "/admin", label: "Platillos", icon: ChefHatOutline },
   { href: "/admin/accounts", label: "Cuentas", icon: WidgetOutline },
+  { href: "/admin/users", label: "Usuarios", icon: UsersGroupRoundedOutline },
   { href: "/admin/reports", label: "Reportes", icon: ChatSquare2Outline },
   { href: "/admin/cash", label: "Caja", icon: DollarOutline },
   { href: "/admin/settings", label: "Ajustes", icon: SettingsOutline },
@@ -21,7 +23,7 @@ export default function NavTabs() {
   const pathname = usePathname() || "/";
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto bg-gray-50">
       <div className="flex flex-row items-center gap-2 px-4 md:px-10">
         {tabs.map((t) => {
           const active = pathname === t.href;
