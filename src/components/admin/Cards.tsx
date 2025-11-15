@@ -7,8 +7,18 @@ type CardProps = {
   icon?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
-  variant: "1" | "2" | "3"| "4";
+  variant: "1" | "2" | "3" | "4";
   noPadding?: boolean;
+  // Props para variante 3 (modo edición)
+  isEditing?: boolean;
+  onEdit?: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
+  // Props para variante 4 (modo edición de contraseña)
+  isEditingPassword?: boolean;
+  onModify?: () => void;
+  onUpdatePassword?: () => void;
+  onCancelPassword?: () => void;
 };
 
 // Variante principal: card con header (mantengo como default para compatibilidad con imports existentes)
@@ -17,7 +27,16 @@ export default function CardContent({
   icon,
   children,
   className,
-  variant, noPadding
+  variant,
+  noPadding,
+  isEditing,
+  onEdit,
+  onSave,
+  onCancel,
+  isEditingPassword,
+  onModify,
+  onUpdatePassword,
+  onCancelPassword
 }: CardProps) {
   return variant === "2" ? (
     <div
@@ -45,10 +64,38 @@ export default function CardContent({
         <div className="gap-3 flex flex-row items-center">
           {icon} {title}
         </div>
-        <button className="bg-Blue-700 text-white p-3 rounded-2xl gap-2 items-center flex-row flex">
-          <PenOutline />
-          Editar
-        </button>
+        <div className="flex gap-2">
+          {!isEditing ? (
+            <button
+              onClick={onEdit}
+              className="gap-2 items-center flex-row flex bg-Blue-700 text-white p-3 rounded-2xl hover:bg-navy-900 transition-colors h-12"
+            >
+              <PenOutline />
+              <p>
+                Editar
+              </p>
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={onSave}
+                className="bg-[#009966] text-white p-3 rounded-2xl hover:bg-[#008855] transition-colors h-12"
+              >
+                <p>
+                  Guardar
+                </p>
+              </button>
+              <button
+                onClick={onCancel}
+                className="border-2 border-gray-700/50 text-gray-700 p-3 rounded-2xl hover:bg-gray-100 transition-colors h-12"
+              >
+                <p>
+                  Cancelar
+                </p>
+              </button>
+            </>
+          )}
+        </div>
       </div>
       <div className="p-6">{children}</div>
     </div>
@@ -61,10 +108,15 @@ export default function CardContent({
         <div className="gap-3 flex flex-row items-center">
           {icon} {title}
         </div>
-        <button className="bg-negativo text-white p-3 rounded-2xl gap-2 items-center flex-row flex">
-          <PenOutline />
-          Modificar
-        </button>
+        {!isEditingPassword && (
+          <button
+            onClick={onModify}
+            className="bg-negativo text-white p-3 rounded-2xl gap-2 items-center flex-row flex hover:bg-negativo/80 transition-colors"
+          >
+            <PenOutline />
+            Modificar
+          </button>
+        )}
       </div>
       <div className="p-6">{children}</div>
     </div>
