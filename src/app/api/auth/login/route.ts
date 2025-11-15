@@ -5,10 +5,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const BACKEND = process.env.BACKEND_API_URL;
-    if (!BACKEND) {
-      return NextResponse.json({ success: false, message: "BACKEND_API_URL not configured" }, { status: 500 });
-    }
+    // Usar localhost directamente o variable de entorno
+    const BACKEND = process.env.BACKEND_API_URL || "http://localhost:5000";
 
     const upstream = await fetch(`${BACKEND.replace(/\/$/, "")}/api/auth/login`, {
       method: "POST",
