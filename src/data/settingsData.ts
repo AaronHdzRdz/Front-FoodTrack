@@ -38,7 +38,7 @@ export const settingsData: SettingsData = {
     },
     contact: {
         email: "juan.perez@foodtrack.com",
-        phone: "+52 55 1234 5678",
+        phone: "55 1234 5678",
     },
 };
 
