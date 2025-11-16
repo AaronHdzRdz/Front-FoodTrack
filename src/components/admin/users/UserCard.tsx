@@ -5,9 +5,10 @@ type Props = {
     userName: string;
     userRol: 'Mesero' | 'Cajero';
     userPhone: number;
+    onClick?: () => void;
 };
 
-export default function UserCard({ userName, userRol, userPhone }: Props) {
+export default function UserCard({ userName, userRol, userPhone, onClick }: Props) {
     const initials = userName
         .split(' ')
         .map(word => word[0])
@@ -16,7 +17,9 @@ export default function UserCard({ userName, userRol, userPhone }: Props) {
         .toUpperCase();
 
     return (
-        <div className="bg-white rounded-2xl p-6 border-1 border-Gray-300 gap-2 flex flex-col">
+        <div
+            onClick={onClick}
+            className="bg-white rounded-2xl p-6 border-1 border-Gray-300 gap-2 flex flex-col hover:shadow-md transition-shadow cursor-pointer">
             <div className="bg-Blue-700 rounded-full w-15 h-15 items-center justify-center flex">
                 <p className="text-white font-sans text-xl not-italic font-normal leading-7 uppercase">
                     {initials}

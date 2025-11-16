@@ -10,6 +10,10 @@ export default function UserFilters({ searchTerm, onSearchChange, roleFilter, on
         <section className="flex flex-col md:flex-row gap-4">
             <input
                 type="text"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
                 placeholder="Buscar por nombre de usuario..."
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
